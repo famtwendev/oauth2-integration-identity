@@ -60,6 +60,12 @@ export default function Home() {
                 src={userDetails.picture}
                 alt={`${userDetails.given_name}'s profile`}
                 className="profile-pic"
+                style={{
+                  width: "100px", // Adjust this value to control the initial width
+                  height: "auto",
+                  minWidth: "100px", // Minimum width to ensure it doesn't get too small
+                  minHeight: "100px", // Minimum height to ensure it doesn't get too small
+                }}
               />
               <p>Welcome back to Famtwen,</p>
               <h1 className="name">{userDetails.name}</h1>
