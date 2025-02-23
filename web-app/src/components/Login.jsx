@@ -24,7 +24,7 @@ export default function Login() {
 
     const targetUrl = `${authUrl}?redirect_uri=${encodeURIComponent(
       callbackUrl
-    )}&response_type=token&client_id=${googleClientId}&scope=openid%20email%20profile`;
+    )}&response_type=code&client_id=${googleClientId}&scope=openid%20email%20profile`;
 
     console.log(targetUrl);
 
@@ -70,7 +70,7 @@ export default function Login() {
         >
           <CardContent>
             <Typography variant="h5" component="h1" gutterBottom>
-              Welcome to Famtwen
+              Welcome to Devtetia
             </Typography>
             <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
               <TextField

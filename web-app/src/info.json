@@ -1,0 +1,16 @@
+{
+  "web": {
+    "client_id": "63026501275-f81ge979kgccjc0jk7nqmbrvbcbeqe0s.apps.googleusercontent.com",
+    "project_id": "famtwen-451314",
+    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+    "token_uri": "https://oauth2.googleapis.com/token",
+    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+    "client_secret": "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",
+    "redirect_uris": [
+      "http://localhost:3000/authenticate"
+    ],
+    "javascript_origins": [
+      "http://localhost:3000"
+    ]
+  }
+}

@@ -1,47 +1,61 @@
-import { useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
-import { setToken } from "../services/localStorageService";
-import { Box, CircularProgress, Typography } from "@mui/material";
+import {useNavigate} from "react-router-dom";
+import {useState, useEffect} from "react";
+import {setToken} from "../services/localStorageService";
+import {Box, CircularProgress, Typography} from "@mui/material";
 
 export default function Authenticate() {
-  const navigate = useNavigate();
-  const [isLoggedin, setIsLoggedin] = useState(false);
+    const navigate = useNavigate();
+    const [isLoggedin, setIsLoggedin] = useState(false);
 
-  useEffect(() => {
-    const accessTokenRegex = /access_token=([^&]+)/;
-    const isMatch = window.location.href.match(accessTokenRegex);
+    useEffect(() => {
+        console.log(window.location.href);
 
-    if (isMatch) {
-      const accessToken = isMatch[1];
+        const authCodeRegex = /code=([^&]+)/;
+        const isMatch = window.location.href.match(authCodeRegex);
 
-      console.log("Token: ", accessToken);
+        if (isMatch) {
+            const authCode = isMatch[1];
 
-      setToken(accessToken);
-      setIsLoggedin(true);
-    }
-  }, []);
+            fetch(
+                `http://localhost:8080/identity/auth/outbound/authentication?code=${authCode}`,
+                {
+                    method: "POST",
+                }
+            )
+                .then((response) => {
+                    return response.json();
+                })
+                .then((data) => {
+                    console.log(data);
 
-  useEffect(() => {
-    if (isLoggedin) {
-      navigate("/");
-    }
-  }, [isLoggedin, navigate]);
+                    setToken(data.result?.token);
+                    setIsLoggedin(true);
+                });
+        }
+    }, []);
 
-  return (
-    <>
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection : "column",
-          gap: "30px",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-        }}
-      >
-        <CircularProgress></CircularProgress>
-        <Typography>Authenticating...</Typography>
-      </Box>
-    </>
-  );
+    useEffect(() => {
+        if (isLoggedin) {
+            navigate("/");
+        }
+    }, [isLoggedin, navigate]);
+
+
+    return (
+        <>
+            <Box
+                sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "30px",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "100vh",
+                }}
+            >
+                <CircularProgress></CircularProgress>
+                <Typography>Authenticating...</Typography>
+            </Box>
+        </>
+    );
 }
