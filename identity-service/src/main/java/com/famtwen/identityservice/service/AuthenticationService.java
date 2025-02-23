@@ -100,6 +100,8 @@ public class AuthenticationService {
                                                                                 .build());
         log.info("TOKEN RESPONSE {}", response);
 
+
+        // Get User
         var userInfo = outbounUserClient.getUserInfo("json", response.getAccessToken());
 
         log.info("User Info: {}", userInfo);
@@ -109,6 +111,7 @@ public class AuthenticationService {
                       .name(PredefinedRole.USER_ROLE)
                       .build());
 
+        // Onboad User
         var user = userRepository.findByUsername(userInfo.getEmail())
                                  .orElseGet(
                                          () -> userRepository.save(User.builder()
@@ -120,8 +123,11 @@ public class AuthenticationService {
                                                                        .build())
                                  );
 
+        var token = generateToken(user);
+
+
         return AuthenticationResponse.builder()
-                                     .token(response.getAccessToken())
+                                     .token(token)
                                      .build();
     }
 
@@ -133,7 +139,7 @@ public class AuthenticationService {
 
         boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPassword());
 
-        if (!authenticated) throw new AppException(ErrorCode.UNAUTHENTICATED);
+        if (!authenticated) throw new AppException(ErrorCode.INVALID_ACCOUNT);
 
         var token = generateToken(user);
 
