@@ -3,12 +3,13 @@ package com.famtwen.identityservice.service;
 import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
-import java.util.StringJoiner;
-import java.util.UUID;
+import java.util.*;
 
+import com.famtwen.identityservice.constant.PredefinedRole;
 import com.famtwen.identityservice.dto.request.*;
-import com.famtwen.identityservice.repository.OutboundIdentityClient;
+import com.famtwen.identityservice.entity.Role;
+import com.famtwen.identityservice.repository.httpclient.OutbounUserClient;
+import com.famtwen.identityservice.repository.httpclient.OutboundIdentityClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -43,6 +44,7 @@ public class AuthenticationService {
     UserRepository userRepository;
     InvalidatedTokenRepository invalidatedTokenRepository;
     OutboundIdentityClient outboundIdentityClient;
+    OutbounUserClient outbounUserClient;
 
     @NonFinal
     @Value("${jwt.signerKey}")
@@ -97,6 +99,26 @@ public class AuthenticationService {
                                                                                 .grantType(GRANT_TYPE)
                                                                                 .build());
         log.info("TOKEN RESPONSE {}", response);
+
+        var userInfo = outbounUserClient.getUserInfo("json", response.getAccessToken());
+
+        log.info("User Info: {}", userInfo);
+
+        Set<Role> roles = new HashSet<>();
+        roles.add(Role.builder()
+                      .name(PredefinedRole.USER_ROLE)
+                      .build());
+
+        var user = userRepository.findByUsername(userInfo.getEmail())
+                                 .orElseGet(
+                                         () -> userRepository.save(User.builder()
+                                                                       .id(userInfo.getId())
+                                                                       .username(userInfo.getEmail())
+                                                                       .firstName(userInfo.getGivenName())
+                                                                       .lastName(userInfo.getFamilyName())
+                                                                       .roles(roles)
+                                                                       .build())
+                                 );
 
         return AuthenticationResponse.builder()
                                      .token(response.getAccessToken())

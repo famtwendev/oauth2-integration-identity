@@ -1,4 +1,4 @@
-package com.famtwen.identityservice.repository;
+package com.famtwen.identityservice.repository.httpclient;
 
 import com.famtwen.identityservice.dto.request.ExchangeTokenRequest;
 import com.famtwen.identityservice.dto.response.ExchangeTokenResponse;
