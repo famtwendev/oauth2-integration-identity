@@ -13,11 +13,16 @@ import { OAuthConfig } from "../configurations/configuration";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getToken } from "../services/localStorageService";
+import GoogleIcon from "@mui/icons-material/Google";
+import { OAuthConfig } from "../configurations/configuration";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { getToken, setToken } from "../services/localStorageService";
 
 export default function Login() {
   const navigate = useNavigate();
 
-  const handleClick = () => {
+  const handleContinueWithGoogle = () => {
     const callbackUrl = OAuthConfig.redirectUri;
     const authUrl = OAuthConfig.authUri;
     const googleClientId = OAuthConfig.clientId;
@@ -42,13 +47,32 @@ export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = (event) => {
+  const handleLogin = (event) => {
     event.preventDefault();
-    // Handle form submission
-    console.log("Username:", username);
-    console.log("Password:", password);
-  };
 
+    const data = {
+      username: username,
+      password: password,
+    };
+
+    fetch(`http://localhost:8080/identity/auth/token`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        console.log(data);
+
+        setToken(data.result?.token);
+        navigate("/");
+      });
+  };
+  
   return (
     <>
       <Box

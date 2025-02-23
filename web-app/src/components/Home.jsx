@@ -10,11 +10,20 @@ export default function Home() {
 
   const getUserDetails = async (accessToken) => {
     const response = await fetch(
-      `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${accessToken}`
+      "http://localhost:8080/identity/users/my-info",
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
     );
+
     const data = await response.json();
-    
-    setUserDetails(data);
+
+    console.log(data.result);
+
+    setUserDetails(data.result);
   };
 
   useEffect(() => {
